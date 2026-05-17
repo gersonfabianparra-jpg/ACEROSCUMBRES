@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Product } from '@/types'
 import ProductCard from '@/components/ui/ProductCard'
@@ -16,7 +16,7 @@ const CATEGORIES = [
   { name: 'Accesorios', icon: <Wrench size={18} />, count: '3' },
 ]
 
-export default function TiendaPage() {
+function TiendaContent() {
   const searchParams = useSearchParams()
   const initialCategory = searchParams.get('categoria') || 'Todos'
 
@@ -92,7 +92,6 @@ export default function TiendaPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Buscador */}
         <div className="relative mb-8 max-w-xl">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -104,12 +103,10 @@ export default function TiendaPage() {
           />
         </div>
 
-        {/* Subcategorías si aplica */}
         {subcategories.length > 1 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {subcategories.map((sub) => (
-              <button key={sub}
-                onClick={() => setSearch(sub)}
+              <button key={sub} onClick={() => setSearch(sub)}
                 className="text-sm bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-blue-300 hover:text-blue-700 transition-colors font-medium text-gray-700">
                 {sub}
               </button>
@@ -144,5 +141,17 @@ export default function TiendaPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function TiendaPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Cargando tienda...</div>
+      </div>
+    }>
+      <TiendaContent />
+    </Suspense>
   )
 }
