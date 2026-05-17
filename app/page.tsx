@@ -1,12 +1,34 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import {
   motion, useScroll, useTransform, useInView,
-  AnimatePresence, useMotionValue, useSpring
+  useMotionValue, useSpring
 } from 'framer-motion'
 import { ArrowRight, ChevronRight, CheckCircle, Clock, Phone, Package, Layers, Shield, Wrench, Play } from 'lucide-react'
+
+// ─── Kinetic text helpers ────────────────────────────────────────────────────
+
+function SplitText({ text, className = '', delay = 0 }: { text: string; className?: string; delay?: number }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+  return (
+    <span ref={ref} className={className} aria-label={text} style={{ display: 'inline-block' }}>
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          style={{ display: 'inline-block', whiteSpace: char === ' ' ? 'pre' : 'normal' }}
+          initial={{ opacity: 0, y: 60, rotateX: -40 }}
+          animate={inView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+          transition={{ duration: 0.6, delay: delay + i * 0.03, ease: [0.21, 0.47, 0.32, 0.98] }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  )
+}
 
 // ─── Animation helpers ───────────────────────────────────────────────────────
 
@@ -23,18 +45,6 @@ function FadeUp({ children, delay = 0, className = '' }: { children: React.React
   )
 }
 
-function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  return (
-    <motion.div ref={ref} className={className}
-      initial={{ opacity: 0 }}
-      animate={inView ? { opacity: 1 } : {}}
-      transition={{ duration: 1, delay }}>
-      {children}
-    </motion.div>
-  )
-}
 
 function SlideIn({ children, delay = 0, from = 'left', className = '' }: { children: React.ReactNode; delay?: number; from?: 'left' | 'right'; className?: string }) {
   const ref = useRef(null)
@@ -103,8 +113,6 @@ const stats = [
   { value: 2018, suffix: '', label: 'Año de fundación' },
 ]
 
-const sectors = ['Minería', 'Construcción', 'Industria Naval', 'Energía', 'Agroindustria', 'Sector Forestal', 'Contratistas', 'Industria General']
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function HomePage() {
@@ -114,12 +122,6 @@ export default function HomePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.08])
 
-  const [activeCategory, setActiveCategory] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => setActiveCategory(p => (p + 1) % categories.length), 3000)
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <div className="bg-[#060d1a] overflow-x-hidden">
@@ -160,35 +162,18 @@ export default function HomePage() {
               Distribuidores de acero en Chile desde 2018
             </motion.div>
 
-            {/* Headline */}
-            <div className="overflow-hidden mb-4">
-              <motion.h1
-                className="text-6xl lg:text-8xl font-black text-white leading-none tracking-tight"
-                initial={{ y: 120, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}>
-                Acero de
-              </motion.h1>
-            </div>
-            <div className="overflow-hidden mb-4">
-              <motion.h1
-                className="text-6xl lg:text-8xl font-black leading-none tracking-tight"
-                style={{ color: '#60a5fa' }}
-                initial={{ y: 120, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.45, ease: [0.21, 0.47, 0.32, 0.98] }}>
-                Alta Calidad
-              </motion.h1>
-            </div>
-            <div className="overflow-hidden mb-10">
-              <motion.h1
-                className="text-6xl lg:text-8xl font-black text-white/30 leading-none tracking-tight"
-                initial={{ y: 120, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}>
-                para Chile
-              </motion.h1>
-            </div>
+            {/* Headline — kinetic split text */}
+            <h1 className="text-6xl lg:text-8xl font-black leading-none tracking-tight mb-10" style={{ perspective: '800px' }}>
+              <div className="mb-2">
+                <SplitText text="Acero de" className="text-white" delay={0.3} />
+              </div>
+              <div className="mb-2">
+                <SplitText text="Alta Calidad" className="text-blue-400" delay={0.5} />
+              </div>
+              <div>
+                <SplitText text="para Chile" className="text-white/30" delay={0.7} />
+              </div>
+            </h1>
 
             <motion.p
               className="text-gray-300 text-xl leading-relaxed max-w-xl mb-10"
@@ -478,6 +463,59 @@ export default function HomePage() {
               ))}
             </div>
           </SlideIn>
+        </div>
+      </section>
+
+      {/* ── CÓMO FUNCIONA ───────────────────────────────────────────────────── */}
+      <section className="py-28 px-6 bg-[#080f1e] overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <FadeUp className="text-center mb-20">
+            <p className="text-blue-400 font-bold text-sm uppercase tracking-[0.3em] mb-4">Proceso simple</p>
+            <h2 className="text-5xl lg:text-6xl font-black text-white">
+              De la consulta al <span className="text-blue-400">despacho</span>
+            </h2>
+          </FadeUp>
+
+          <div className="relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-8 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
+            <Stagger className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[
+                { n: '01', title: 'Explora el catálogo', desc: 'Más de 200 productos organizados por categoría con especificaciones completas.' },
+                { n: '02', title: 'Arma tu cotización', desc: 'Agrega los productos que necesitas al carrito y selecciona cantidades.' },
+                { n: '03', title: 'Envía la solicitud', desc: 'Completa tus datos en el formulario. Sin registro previo necesario.' },
+                { n: '04', title: 'Respuesta en 2 horas', desc: 'Te contactamos con precio final y disponibilidad en tiempo récord.' },
+              ].map((step) => (
+                <StaggerItem key={step.n}>
+                  <motion.div
+                    className="relative text-center group"
+                    whileHover={{ y: -6 }}
+                    transition={{ duration: 0.3 }}>
+                    <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 mb-6 group-hover:bg-blue-500/20 group-hover:border-blue-400/40 transition-all duration-300">
+                      <span className="text-blue-400 font-black text-xl">{step.n}</span>
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl border border-blue-400/20"
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: parseInt(step.n) * 0.5 }}
+                      />
+                    </div>
+                    <h3 className="text-white font-bold text-base mb-2">{step.title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
+                  </motion.div>
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+
+          <FadeUp delay={0.4} className="text-center mt-14">
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Link href="/tienda"
+                className="inline-flex items-center gap-3 bg-blue-500 hover:bg-blue-400 text-white px-10 py-4 rounded-2xl font-black text-lg shadow-2xl shadow-blue-500/30 transition-colors">
+                Empezar ahora <ArrowRight size={20} />
+              </Link>
+            </motion.div>
+          </FadeUp>
         </div>
       </section>
 

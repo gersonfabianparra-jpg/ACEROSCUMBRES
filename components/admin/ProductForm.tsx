@@ -34,6 +34,9 @@ export default function ProductForm({ product }: Props) {
     unit: product?.unit ?? 'unidad',
     is_featured: product?.is_featured ?? false,
     image_url: product?.image_url ?? '',
+    specs: product?.specs
+      ? Object.entries(product.specs as Record<string, string>).map(([key, value]) => ({ key, value: String(value) }))
+      : [] as { key: string; value: string }[],
   })
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -90,6 +93,9 @@ export default function ProductForm({ product }: Props) {
         unit: form.unit,
         is_featured: form.is_featured,
         image_url,
+        specs: form.specs.filter(s => s.key.trim()).length > 0
+          ? Object.fromEntries(form.specs.filter(s => s.key.trim()).map(s => [s.key.trim(), s.value]))
+          : null,
       }
 
       if (isEditing) {
@@ -168,6 +174,45 @@ export default function ProductForm({ product }: Props) {
               className="w-4 h-4 text-blue-600 rounded" />
             <span className="text-sm font-medium text-gray-700">Producto destacado (aparece en Home)</span>
           </label>
+
+          {/* Specs editor */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">Especificaciones técnicas</label>
+              <button type="button"
+                onClick={() => setForm(f => ({ ...f, specs: [...f.specs, { key: '', value: '' }] }))}
+                className="text-xs text-blue-600 hover:text-blue-700 font-semibold">
+                + Agregar fila
+              </button>
+            </div>
+            {form.specs.length === 0 ? (
+              <p className="text-xs text-gray-400 italic py-2">Sin especificaciones. Haz clic en &quot;+ Agregar fila&quot;.</p>
+            ) : (
+              <div className="space-y-2">
+                {form.specs.map((spec, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      placeholder="Nombre (ej: Espesor)"
+                      value={spec.key}
+                      onChange={e => setForm(f => ({ ...f, specs: f.specs.map((s, j) => j === i ? { ...s, key: e.target.value } : s) }))}
+                      className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <input
+                      placeholder="Valor (ej: 2mm)"
+                      value={spec.value}
+                      onChange={e => setForm(f => ({ ...f, specs: f.specs.map((s, j) => j === i ? { ...s, value: e.target.value } : s) }))}
+                      className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button type="button"
+                      onClick={() => setForm(f => ({ ...f, specs: f.specs.filter((_, j) => j !== i) }))}
+                      className="px-3 text-red-400 hover:text-red-600 text-lg leading-none">
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Columna derecha - imagen */}

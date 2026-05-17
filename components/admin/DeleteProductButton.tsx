@@ -15,7 +15,7 @@ export default function DeleteProductButton({ id, name }: { id: string; name: st
   }
 
   return (
-    <button onClick={handleDelete} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+    <button onClick={handleDelete} className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
       <Trash2 size={15} />
     </button>
   )
