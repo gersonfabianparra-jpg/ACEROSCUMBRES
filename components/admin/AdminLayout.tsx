@@ -81,6 +81,9 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const pathname = usePathname()
+
+  if (pathname === '/admin/login') return <>{children}</>
 
   return (
     <div className="min-h-screen bg-[#080d14] flex text-white">
