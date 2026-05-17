@@ -20,7 +20,7 @@ export default function RootLayout({
       <body>
         <QuoteProvider>
           <Navbar />
-          <main className="pt-[72px]">{children}</main>
+          <main>{children}</main>
           <Footer />
         </QuoteProvider>
       </body>
