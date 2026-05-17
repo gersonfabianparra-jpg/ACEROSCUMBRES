@@ -481,6 +481,58 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── GALERÍA DE PROYECTOS ─────────────────────────────────────────────── */}
+      <section className="relative py-32 px-6 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060d1a] via-[#070e1c] to-[#060d1a]" />
+
+        <div className="relative max-w-7xl mx-auto">
+          <FadeUp className="text-center mb-16">
+            <p className="text-blue-400 font-bold text-sm uppercase tracking-[0.3em] mb-4">Nuestro trabajo</p>
+            <h2 className="text-5xl lg:text-6xl font-black text-white leading-tight">
+              Proyectos que<br /><span className="text-blue-400">hablan por sí solos</span>
+            </h2>
+          </FadeUp>
+
+          {/* Mosaic grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-[200px]">
+            {[
+              { url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80', span: 'col-span-2 row-span-2', label: 'Estructura Industrial' },
+              { url: 'https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=800&q=80', span: 'col-span-1 row-span-1', label: 'Cubierta Metálica' },
+              { url: 'https://images.unsplash.com/photo-1565008576549-57569a49371d?w=800&q=80', span: 'col-span-1 row-span-1', label: 'Perfiles Estructurales' },
+              { url: 'https://images.unsplash.com/photo-1590359802044-9a8d9df0e2bc?w=800&q=80', span: 'col-span-1 row-span-2', label: 'Panel Aislado' },
+              { url: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80', span: 'col-span-1 row-span-1', label: 'Revestimiento Arquitectónico' },
+              { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', span: 'col-span-2 row-span-1', label: 'Bodega Industrial' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className={`${item.span} relative rounded-2xl overflow-hidden group cursor-pointer`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.7, delay: i * 0.08, ease: [0.21, 0.47, 0.32, 0.98] }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <img src={item.url} alt={item.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <motion.div
+                  className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
+                >
+                  <p className="text-white font-bold text-sm">{item.label}</p>
+                </motion.div>
+                <div className="absolute inset-0 border border-white/0 group-hover:border-white/20 rounded-2xl transition-colors duration-500" />
+              </motion.div>
+            ))}
+          </div>
+
+          <FadeUp delay={0.3} className="text-center mt-12">
+            <Link href="/proyectos"
+              className="inline-flex items-center gap-3 border border-white/20 hover:border-blue-400/60 text-gray-300 hover:text-white px-8 py-4 rounded-2xl font-semibold transition-all hover:bg-blue-500/10 backdrop-blur-sm">
+              Ver todos los proyectos <ArrowRight size={18} />
+            </Link>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ── CTA FINAL ────────────────────────────────────────────────────────── */}
       <section className="relative py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-[#060d1a] to-indigo-900/30" />
